@@ -46,6 +46,11 @@
   --editorFreeHighlight-editing-cursor: url(images/cursor-editorFreeHighlight.svg)
       1 18,
     pointer;
+/*==== R.Sato 追加 start */
+    --editorLine-editing-cursor: url(images/cursor-editorLine.svg) 0 16, pointer;
+    --editorSquare-editing-cursor: url(images/cursor-editorSquare.svg) 0 16, pointer;
+    --editorCircle-editing-cursor: url(images/cursor-editorCircle.svg) 0 16, pointer;
+/*==== R.Sato 追加 end */
 
   --new-alt-text-warning-image: url(images/altText_warning.svg);
 }
@@ -156,7 +161,22 @@
   cursor: var(--editorInk-editing-cursor);
 }
 
-.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor) {
+/*==== R.Sato 追加 start */
+.annotationEditorLayer.lineEditing {
+  cursor: var(--editorLine-editing-cursor);
+}
+.annotationEditorLayer.squareEditing {
+  cursor: var(--editorSquare-editing-cursor);
+}
+.annotationEditorLayer.circleEditing {
+  cursor: var(--editorCircle-editing-cursor);
+}
+/*==== R.Sato 追加 end */
+
+/*==== R.Sato 更新 end */
+/*.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor) {*/
+.annotationEditorLayer :is(.freeTextEditor, .inkEditor, .stampEditor, .lineEditor) {
+/*==== R.Sato 更新 end */
   position: absolute;
   background: transparent;
   z-index: 1;
@@ -218,7 +238,10 @@
 }
 
 .annotationEditorLayer
-  :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor),
+/*==== R.Sato 更新 start */
+/*  :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor),*/
+  :is(.freeTextEditor, .inkEditor, .stampEditor, .highlightEditor, .lineEditor),
+/*==== R.Sato 更新 end */
 .textLayer {
   .editToolbar {
     --editor-toolbar-delete-image: url(images/editor-toolbar-delete.svg);
@@ -619,8 +642,30 @@
   }
 }
 
+/*==== R.Sato 追加 start */
+.annotationEditorLayer .lineEditor {
+  width: 100%;
+  height: 100%;
+}
+
+.annotationEditorLayer .lineEditor.editing {
+  cursor: inherit;
+}
+
+.annotationEditorLayer .lineEditor .lineEditorCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+/*==== R.Sato 追加 end */
+
 .annotationEditorLayer {
-  :is(.freeTextEditor, .inkEditor, .stampEditor) {
+/*==== R.Sato 更新 start */
+/*  :is(.freeTextEditor, .inkEditor, .stampEditor) {*/
+  :is(.freeTextEditor, .inkEditor, .stampEditor, lineEditor) {
+/*==== R.Sato 更新 start */
     & > .resizers {
       position: absolute;
       inset: 0;

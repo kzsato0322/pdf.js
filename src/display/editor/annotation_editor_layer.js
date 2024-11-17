@@ -32,6 +32,9 @@ import { HighlightEditor } from "./highlight.js";
 import { InkEditor } from "./ink.js";
 import { setLayerDimensions } from "../display_utils.js";
 import { StampEditor } from "./stamp.js";
+//==== R.Sato 追加 start
+import { LineEditor } from "./line.js";
+//==== R.Sato 追加 end
 
 /**
  * @typedef {Object} AnnotationEditorLayerOptions
@@ -85,7 +88,10 @@ class AnnotationEditorLayer {
   static _initialized = false;
 
   static #editorTypes = new Map(
-    [FreeTextEditor, InkEditor, StampEditor, HighlightEditor].map(type => [
+//==== R.Sato 更新 start
+//    [FreeTextEditor, InkEditor, StampEditor, HighlightEditor].map(type => [
+    [FreeTextEditor, InkEditor, StampEditor, HighlightEditor, LineEditor].map(type => [
+//==== R.Sato 更新 end
       type._editorType,
       type,
     ])
@@ -172,6 +178,15 @@ class AnnotationEditorLayer {
         this.togglePointerEvents(false);
         this.disableClick();
         break;
+//==== R.Sato 追加 start
+      case AnnotationEditorType.LINE:
+        // We always want to have an line editor ready to draw in.
+        this.addLineEditorIfNeeded(false);
+        this.disableTextSelection();
+        this.togglePointerEvents(true);
+        this.disableClick();
+        break;
+//==== R.Sato 追加 end
       default:
         this.disableTextSelection();
         this.togglePointerEvents(true);
@@ -216,6 +231,32 @@ class AnnotationEditorLayer {
     );
     editor.setInBackground();
   }
+
+//==== R.Sato 追加 start
+  addLineEditorIfNeeded(isCommitting) {
+    if (this.#uiManager.getMode() !== AnnotationEditorType.LINE) {
+      // We don't want to add an ink editor if we're not in line mode!
+      return;
+    }
+
+    if (!isCommitting) {
+      // We're removing an editor but an empty one can already exist so in this
+      // case we don't need to create a new one.
+      for (const editor of this.#editors.values()) {
+        if (editor.isEmpty()) {
+          editor.setInBackground();
+          return;
+        }
+      }
+    }
+
+    const editor = this.createAndAddNewEditor(
+      { offsetX: 0, offsetY: 0 },
+      /* isCentered = */ false
+    );
+    editor.setInBackground();
+  }
+//==== R.Sato 追加 end
 
   /**
    * Set the editing state.
@@ -485,6 +526,9 @@ class AnnotationEditorLayer {
 
     if (!this.#isCleaningUp) {
       this.addInkEditorIfNeeded(/* isCommitting = */ false);
+//==== R.Sato 追加 start
+      this.addLineEditorIfNeeded(/* isCommitting = */ false);
+//==== R.Sato 追加 start
     }
   }
 
@@ -904,7 +948,10 @@ class AnnotationEditorLayer {
       }
     }
     this.addInkEditorIfNeeded(/* isCommitting = */ false);
-  }
+//==== R.Sato 追加 start
+    this.addLineEditorIfNeeded(/* isCommitting = */ false);
+//==== R.Sato 追加 start
+}
 
   /**
    * Get page dimensions.
