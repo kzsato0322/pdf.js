@@ -75,11 +75,11 @@ const AnnotationEditorType = {
   DISABLE: -1,
   NONE: 0,
   FREETEXT: 3,
-  //==== R.Sato 追加 start
+  // ==== R.Sato 追加 start
   LINE: 4,
   SQUARE: 5,
   CIRCLE: 6,
-  //==== R.Sato 追加 end
+  // ==== R.Sato 追加 end
   HIGHLIGHT: 9,
   STAMP: 13,
   INK: 15,
@@ -99,7 +99,7 @@ const AnnotationEditorParamsType = {
   HIGHLIGHT_THICKNESS: 33,
   HIGHLIGHT_FREE: 34,
   HIGHLIGHT_SHOW_ALL: 35,
-  //==== R.Sato 追加 start
+  // ==== R.Sato 追加 start
   LINE_COLOR: 41,
   LINE_THICKNESS: 42,
   LINE_OPACITY: 43,
@@ -109,7 +109,7 @@ const AnnotationEditorParamsType = {
   CIRCLE_COLOR: 61,
   CIRCLE_THICKNESS: 62,
   CIRCLE_OPACITY: 63,
-  //==== R.Sato 追加 end
+  // ==== R.Sato 追加 end
 };
 
 // Permission flags from Table 22, Section 7.6.3.2 of the PDF specification.

@@ -3267,5 +3267,8 @@ export {
   FreeTextAnnotationElement,
   HighlightAnnotationElement,
   InkAnnotationElement,
+  // === R.Sato 追加 start
+  LineAnnotationElement,
+  // === R.Sato 追加 end
   StampAnnotationElement,
 };

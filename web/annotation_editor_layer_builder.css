@@ -46,11 +46,11 @@
   --editorFreeHighlight-editing-cursor: url(images/cursor-editorFreeHighlight.svg)
       1 18,
     pointer;
-/*==== R.Sato 追加 start */
+    /*==== R.Sato 追加 start */
     --editorLine-editing-cursor: url(images/cursor-editorLine.svg) 0 16, pointer;
     --editorSquare-editing-cursor: url(images/cursor-editorSquare.svg) 0 16, pointer;
     --editorCircle-editing-cursor: url(images/cursor-editorCircle.svg) 0 16, pointer;
-/*==== R.Sato 追加 end */
+    /*==== R.Sato 追加 end */
 
   --new-alt-text-warning-image: url(images/altText_warning.svg);
 }

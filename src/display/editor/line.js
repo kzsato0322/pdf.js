@@ -20,38 +20,55 @@ import { opacityToHex } from "./tools.js";
 class LineEditor extends AnnotationEditor {
   // ベースPDF高さ
   #baseHeight = 0;
+
   // ベースPDF幅
   #baseWidth = 0;
+
   // CanvasContextタイムアウトID
   #canvasContextMenuTimeoutId = null;
+
   // 現在描画中path2D
   #currentPath2D = new Path2D();
+
   // 描画終了フラグ
   #disableEditing = false;
+
   // 描画中止コントローラ
   #drawingAC = null;
+
   // 描画対象有無
   #hasSomethingToDraw = false;
+
   // Canvas初期化済フラグ
   #isCanvasInitialized = false;
+
   // リサイズ（スケーリング）監視
   #observer = null;
+
   // マウスDOWN用AC
   #pointerdownAC = null;
+
   // 実幅
   #realWidth = 0;
+
   // 実高さ
   #realHeight = 0;
+
   // 
   #requestFrameCallback = null;
+
   // 描画色
   static _defaultColor = null;
+
   // 描画透過度
   static _defaultOpacity = 1;
+
   // 描画太さ
   static _defaultThickness = 1;
+
   // 描画タイプ
   static _type = "line";
+
   // エディタタイプ
   static _editorType = AnnotationEditorType.LINE;
 
@@ -87,8 +104,8 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * アノテーションエディタ初期化
-   * @param {*} l10n 
-   * @param {*} uiManager 
+   * @param {*} l10n
+   * @param {*} uiManager
    * @inheritdoc
    */
   static initialize(l10n, uiManager) {
@@ -244,7 +261,7 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * アノテーション描画環境再構築
-   * @returns 
+   * @returns
    * @inheritdoc
    */
   rebuild() {
@@ -333,7 +350,7 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * 線アノテーションエディットモード設定
-   * @returns 
+   * @returns
    * @inheritdoc
    */
   enableEditMode() {
@@ -350,7 +367,7 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * アノテーションエディットモード解除
-   * @returns 
+   * @returns
    * @inheritdoc
    */
   disableEditMode() {
@@ -398,13 +415,13 @@ class LineEditor extends AnnotationEditor {
     } = this;
     // ローテーションを判定
     switch (parentRotation) {
-      case 90:  // 90度の場合
+      case 90: // 90度の場合
         return [0, height, height, width];
       case 180: // 180度の場合
         return [width, height, width, height];
       case 270: // 270度の場合
         return [width, 0, height, width];
-      default:  // 0度の場合
+      default: // 0度の場合
         return [0, 0, width, height];
     }
   }
@@ -549,6 +566,15 @@ class LineEditor extends AnnotationEditor {
     if (this.currentPath.length > 1) {
       // 前回のcurrentPathへのx,y座標を削除
       this.currentPath.pop();
+      const { ctx } = this;
+      const thickness = Math.ceil(this.thickness * this.parentScale);
+      const lastPoints = this.currentPath.slice(-3);
+      const xx = lastPoints.map(xy => xy[0]);
+      const yy = lastPoints.map(xy => xy[1]);
+      const xMin = Math.min(...xx) - thickness;
+      const xMax = Math.max(...xx) + thickness;
+      const yMin = Math.min(...yy) - thickness;
+      const yMax = Math.max(...yy) + thickness;
       // Canvasの描画をクリア
       if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("MOZCENTRAL")) {
         // In Chrome, the clip() method doesn't work as expected.
@@ -560,7 +586,7 @@ class LineEditor extends AnnotationEditor {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       }
     }
-    let path2D = this.#currentPath2D;
+    const path2D = this.#currentPath2D;
     // 今回のx,y座標をcurrentPathにPUSH
     this.currentPath.push([x, y]);
     this.#hasSomethingToDraw = true;
@@ -575,6 +601,15 @@ class LineEditor extends AnnotationEditor {
    * 未確定の線の確定描画処理
    */
   #fixDraw() {
+    const { ctx } = this;
+    const thickness = Math.ceil(this.thickness * this.parentScale);
+    const lastPoints = this.currentPath.slice(-3);
+    const xx = lastPoints.map(xy => xy[0]);
+    const yy = lastPoints.map(xy => xy[1]);
+    const xMin = Math.min(...xx) - thickness;
+    const xMax = Math.max(...xx) + thickness;
+    const yMin = Math.min(...yy) - thickness;
+    const yMax = Math.max(...yy) + thickness;
     // Canvasの描画をクリア
     if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("MOZCENTRAL")) {
       // In Chrome, the clip() method doesn't work as expected.
@@ -585,7 +620,7 @@ class LineEditor extends AnnotationEditor {
     } else {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
-    let path2D = this.#currentPath2D;
+    const path2D = this.#currentPath2D;
     this.#hasSomethingToDraw = true;
     // currentPathの2番目のx,y座標を取得
     const [lastX, lastY] = this.currentPath[1];
@@ -704,21 +739,21 @@ class LineEditor extends AnnotationEditor {
     ctx.restore();
   }
 
-  #makeBezierCurve(path2D, x0, y0, x1, y1, x2, y2) {
-    const prevX = (x0 + x1) / 2;
-    const prevY = (y0 + y1) / 2;
-    const x3 = (x1 + x2) / 2;
-    const y3 = (y1 + y2) / 2;
+  // #makeBezierCurve(path2D, x0, y0, x1, y1, x2, y2) {
+  //   const prevX = (x0 + x1) / 2;
+  //   const prevY = (y0 + y1) / 2;
+  //   const x3 = (x1 + x2) / 2;
+  //   const y3 = (y1 + y2) / 2;
 
-    path2D.bezierCurveTo(
-      prevX + (2 * (x1 - prevX)) / 3,
-      prevY + (2 * (y1 - prevY)) / 3,
-      x3 + (2 * (x1 - x3)) / 3,
-      y3 + (2 * (y1 - y3)) / 3,
-      x3,
-      y3
-    );
-  }
+  //   path2D.bezierCurveTo(
+  //     prevX + (2 * (x1 - prevX)) / 3,
+  //     prevY + (2 * (y1 - prevY)) / 3,
+  //     x3 + (2 * (x1 - x3)) / 3,
+  //     y3 + (2 * (y1 - y3)) / 3,
+  //     x3,
+  //     y3
+  //   );
+  // }
 
   #generateBezierPoints() {
     const path = this.currentPath;
@@ -979,7 +1014,7 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * アノテーションレンダリング
-   * @returns 
+   * @returns
    * @inheritdoc
    */
   render() {
@@ -1090,7 +1125,7 @@ class LineEditor extends AnnotationEditor {
   }
 
   /**
-   * 
+   *
    * @param {number} width 幅
    * @param {number} height 高さ
    */
@@ -1142,22 +1177,22 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * PDFへ座標変換（座標→ポイント）
-   * @param {*} points 
-   * @param {*} rect 
-   * @param {*} rotation 
-   * @returns 
+   * @param {*} points
+   * @param {*} rect
+   * @param {*} rotation
+   * @returns
    */
   static #toPDFCoordinates(points, rect, rotation) {
     const [blX, blY, trX, trY] = rect;
     // 回転率判定
     switch (rotation) {
-      case 0:   // 0度の場合
+      case 0: // 0度の場合
         for (let i = 0, ii = points.length; i < ii; i += 2) {
           points[i] += blX;
           points[i + 1] = trY - points[i + 1];
         }
         break;
-      case 90:  // 90度の場合
+      case 90: // 90度の場合
         for (let i = 0, ii = points.length; i < ii; i += 2) {
           const x = points[i];
           points[i] = points[i + 1] + blX;
@@ -1185,22 +1220,22 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * PDFから座標変換（座標→ポイント）
-   * @param {*} points 
-   * @param {*} rect 
-   * @param {*} rotation 
-   * @returns 
+   * @param {*} points
+   * @param {*} rect
+   * @param {*} rotation
+   * @returns
    */
   static #fromPDFCoordinates(points, rect, rotation) {
     const [blX, blY, trX, trY] = rect;
     // 回転率判定
     switch (rotation) {
-      case 0:   // 0度の場合
+      case 0: // 0度の場合
         for (let i = 0, ii = points.length; i < ii; i += 2) {
           points[i] -= blX;
           points[i + 1] = trY - points[i + 1];
         }
         break;
-      case 90:  // 90度の場合
+      case 90: // 90度の場合
         for (let i = 0, ii = points.length; i < ii; i += 2) {
           const x = points[i];
           points[i] = points[i + 1] - blY;
@@ -1326,7 +1361,7 @@ class LineEditor extends AnnotationEditor {
    * @returns {undefined}
    */
   #fitToContent(firstTime = false) {
-    // 
+    //
     if (this.isEmpty()) {
       return;
     }
