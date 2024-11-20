@@ -64,6 +64,12 @@ function getViewerConfiguration() {
       ),
       editorInkButton: document.getElementById("editorInkButton"),
       editorInkParamsToolbar: document.getElementById("editorInkParamsToolbar"),
+      // R.Sato 追加 start
+      editorLineButton: document.getElementById("editorLineButton"),
+      editorLineParamsToolbar: document.getElementById(
+        "editorLineParamsToolbar"
+      ),
+      // R.Sato 追加 end
       editorStampButton: document.getElementById("editorStampButton"),
       editorStampParamsToolbar: document.getElementById(
         "editorStampParamsToolbar"
@@ -216,6 +222,11 @@ function getViewerConfiguration() {
       editorInkColor: document.getElementById("editorInkColor"),
       editorInkThickness: document.getElementById("editorInkThickness"),
       editorInkOpacity: document.getElementById("editorInkOpacity"),
+      // R.Sato 追加 start
+      editorLineColor: document.getElementById("editorLineColor"),
+      editorLineThickness: document.getElementById("editorLineThickness"),
+      editorLineOpacity: document.getElementById("editorLineOpacity"),
+      // R.Sato 追加 end
       editorStampAddImage: document.getElementById("editorStampAddImage"),
       editorFreeHighlightThickness: document.getElementById(
         "editorFreeHighlightThickness"

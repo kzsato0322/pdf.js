@@ -305,6 +305,29 @@ See https://github.com/adobe-type-tools/cmap-resources
                       </div>
                     </div>
                   </div>
+                  <!-- R.Sato 追加 start -->
+                  <div id="editorLine" class="toolbarButtonWithContainer">
+                    <button id="editorLineButton" class="toolbarButton" type="button" disabled="disabled" title="Draw" role="radio" aria-expanded="false" aria-haspopup="true" aria-controls="editorLineParamsToolbar" tabindex="0" data-l10n-id="pdfjs-editor-line-button">
+                      <span data-l10n-id="pdfjs-editor-line-button-label">Draw</span>
+                    </button>
+                    <div class="editorParamsToolbar hidden doorHangerRight" id="editorLineParamsToolbar">
+                      <div class="editorParamsToolbarContainer">
+                        <div class="editorParamsSetter">
+                          <label for="editorLineColor" class="editorParamsLabel" data-l10n-id="pdfjs-editor-line-color-input">Color</label>
+                          <input type="color" id="editorLineColor" class="editorParamsColor" tabindex="0">
+                        </div>
+                        <div class="editorParamsSetter">
+                          <label for="editorLineThickness" class="editorParamsLabel" data-l10n-id="pdfjs-editor-line-thickness-input">Thickness</label>
+                          <input type="range" id="editorLineThickness" class="editorParamsSlider" value="1" min="1" max="20" step="1" tabindex="0">
+                        </div>
+                        <div class="editorParamsSetter">
+                          <label for="editorLineOpacity" class="editorParamsLabel" data-l10n-id="pdfjs-editor-line-opacity-input">Opacity</label>
+                          <input type="range" id="editorLineOpacity" class="editorParamsSlider" value="100" min="1" max="100" step="1" tabindex="0">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- R.Sato 追加 end -->
                   <div id="editorStamp" class="toolbarButtonWithContainer">
                     <button id="editorStampButton" class="toolbarButton" type="button" disabled="disabled" title="Add or edit images" role="radio" aria-expanded="false" aria-haspopup="true" aria-controls="editorStampParamsToolbar" tabindex="0" data-l10n-id="pdfjs-editor-stamp-button">
                       <span data-l10n-id="pdfjs-editor-stamp-button-label">Add or edit images</span>

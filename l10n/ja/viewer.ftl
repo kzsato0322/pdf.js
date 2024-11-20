@@ -298,6 +298,11 @@ pdfjs-editor-free-text-button-label = フリーテキスト注釈
 pdfjs-editor-ink-button =
     .title = インク注釈を追加します
 pdfjs-editor-ink-button-label = インク注釈
+## R.Sato 追加 start
+pdfjs-editor-line-button =
+    .title = 線注釈を追加します
+pdfjs-editor-line-button-label = 線注釈
+## R.Sato 追加 end
 pdfjs-editor-stamp-button =
     .title = 画像を追加または編集します
 pdfjs-editor-stamp-button-label = 画像を追加または編集
@@ -313,6 +318,10 @@ pdfjs-highlight-floating-button-label = 強調
 
 pdfjs-editor-remove-ink-button =
     .title = インク注釈を削除します
+## R.Sato 追加 start
+pdfjs-editor-remove-line-button =
+    .title = 線注釈を削除します
+## R.Sato 追加 end
 pdfjs-editor-remove-freetext-button =
     .title = テキストを削除します
 pdfjs-editor-remove-stamp-button =
@@ -346,6 +355,12 @@ pdfjs-ink =
     .aria-label = インク注釈エディター
 pdfjs-ink-canvas =
     .aria-label = ユーザー作成画像
+## R.Sato 追加 start
+pdfjs-line =
+    .aria-label = 線注釈エディター
+pdfjs-line-canvas =
+    .aria-label = ユーザー作成画像
+## R.Sato 追加 end
 
 ## Alt-text dialog
 

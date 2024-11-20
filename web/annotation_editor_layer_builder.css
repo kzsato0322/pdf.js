@@ -664,7 +664,7 @@
 .annotationEditorLayer {
 /*==== R.Sato 更新 start */
 /*  :is(.freeTextEditor, .inkEditor, .stampEditor) {*/
-  :is(.freeTextEditor, .inkEditor, .stampEditor, lineEditor) {
+  :is(.freeTextEditor, .inkEditor, .stampEditor, .lineEditor) {
 /*==== R.Sato 更新 start */
     & > .resizers {
       position: absolute;

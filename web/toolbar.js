@@ -101,6 +101,20 @@ class Toolbar {
           },
         },
       },
+      // R.Sato 追加 start
+      {
+        element: options.editorLineButton,
+        eventName: "switchannotationeditormode",
+        eventDetails: {
+          get mode() {
+            const { classList } = options.editorLineButton;
+            return classList.contains("toggled")
+              ? AnnotationEditorType.NONE
+              : AnnotationEditorType.LINE;
+          },
+        },
+      },
+      // R.Sato 追加 end
       {
         element: options.editorStampButton,
         eventName: "switchannotationeditormode",
@@ -277,6 +291,10 @@ class Toolbar {
       editorHighlightParamsToolbar,
       editorInkButton,
       editorInkParamsToolbar,
+      // R.Sato 追加 start
+      editorLineButton,
+      editorLineParamsToolbar,
+      // R.Sato 追加 end
       editorStampButton,
       editorStampParamsToolbar,
     } = this.#opts;
@@ -296,6 +314,13 @@ class Toolbar {
       mode === AnnotationEditorType.INK,
       editorInkParamsToolbar
     );
+    // R.Sato 追加 start
+    toggleExpandedBtn(
+      editorLineButton,
+      mode === AnnotationEditorType.LINE,
+      editorLineParamsToolbar
+    );
+    // R.Sato 追加 end
     toggleExpandedBtn(
       editorStampButton,
       mode === AnnotationEditorType.STAMP,
@@ -306,6 +331,9 @@ class Toolbar {
     editorFreeTextButton.disabled = isDisable;
     editorHighlightButton.disabled = isDisable;
     editorInkButton.disabled = isDisable;
+    // R.Sato 追加 start
+    editorLineButton.disabled = isDisable;
+    // R.Sato 追加 end
     editorStampButton.disabled = isDisable;
   }
 

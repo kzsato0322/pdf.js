@@ -48,6 +48,11 @@ class AnnotationEditorParams {
     editorInkColor,
     editorInkThickness,
     editorInkOpacity,
+    // R.Sato 追加 start
+    editorLineColor,
+    editorLineThickness,
+    editorLineOpacity,
+    // R.Sato 追加 end
     editorStampAddImage,
     editorFreeHighlightThickness,
     editorHighlightShowAll,
@@ -74,6 +79,17 @@ class AnnotationEditorParams {
     editorInkOpacity.addEventListener("input", function () {
       dispatchEvent("INK_OPACITY", this.valueAsNumber);
     });
+    // R.Sato 追加 start
+    editorLineColor.addEventListener("input", function () {
+      dispatchEvent("LINE_COLOR", this.value);
+    });
+    editorLineThickness.addEventListener("input", function () {
+      dispatchEvent("LINE_THICKNESS", this.valueAsNumber);
+    });
+    editorLineOpacity.addEventListener("input", function () {
+      dispatchEvent("LINE_OPACITY", this.valueAsNumber);
+    });
+    // R.Sato 追加 end
     editorStampAddImage.addEventListener("click", () => {
       this.eventBus.dispatch("reporttelemetry", {
         source: this,
@@ -111,6 +127,17 @@ class AnnotationEditorParams {
           case AnnotationEditorParamsType.INK_OPACITY:
             editorInkOpacity.value = value;
             break;
+          // R.Sato 追加 start
+          case AnnotationEditorParamsType.LINE_COLOR:
+            editorLineColor.value = value;
+            break;
+          case AnnotationEditorParamsType.LINE_THICKNESS:
+            editorLineThickness.value = value;
+            break;
+          case AnnotationEditorParamsType.LINE_OPACITY:
+            editorLineOpacity.value = value;
+            break;
+          // R.Sato 追加 start
           case AnnotationEditorParamsType.HIGHLIGHT_THICKNESS:
             editorFreeHighlightThickness.value = value;
             break;

@@ -30,6 +30,12 @@ class LineEditor extends AnnotationEditor {
   // 現在描画中path2D
   #currentPath2D = new Path2D();
 
+  // 仮描画中path2D
+  tempPath2D = null;
+
+  // 描画中フラグ
+  isDrawing = false;
+
   // 描画終了フラグ
   #disableEditing = false;
 
@@ -54,7 +60,7 @@ class LineEditor extends AnnotationEditor {
   // 実高さ
   #realHeight = 0;
 
-  // 
+  //
   #requestFrameCallback = null;
 
   // 描画色
@@ -90,6 +96,8 @@ class LineEditor extends AnnotationEditor {
     this.allRawPaths = [];
     // 描画中パス配列
     this.currentPath = [];
+    // 仮線
+    this.tempLine = null;
     // 拡大
     this.scaleFactor = 1;
     // 移動位置座標
@@ -440,6 +448,19 @@ class LineEditor extends AnnotationEditor {
   }
 
   /**
+   * アノテーション選択状態の描画スタイル設定
+   * @param なし
+   */
+  // #setTempStroke() {
+  //   const { ctx } = this;
+  //   ctx.lineWidth = LineEditor._defaultThickness;
+  //   ctx.lineCap = "round";
+  //   ctx.lineJoin = "round";
+  //   ctx.miterLimit = 10;
+  //   ctx.strokeStyle = "red";
+  // }
+
+  /**
    * 未確定の線の描画開始処理
    * @param {number} x
    * @param {number} y
@@ -487,6 +508,8 @@ class LineEditor extends AnnotationEditor {
 
     // 描画中フラグON
     this.isEditing = true;
+    // 描画中フラグON
+    this.isDrawing = true;
     // Canvasが未初期化の場合
     if (!this.#isCanvasInitialized) {
       // Canvasを初期化済に設定
@@ -503,6 +526,11 @@ class LineEditor extends AnnotationEditor {
     }
     // currentPathに最初のx,y座標を保存
     this.currentPath.push([x, y]);
+    // 仮線をクリア
+    this.tempLine = null;
+    // 仮線path2D
+    // this.tempPath2D = new Path2D();
+    this.tempPath2D = null;
     // 描画対象有無をfalse
     this.#hasSomethingToDraw = false;
     // 線のスタイル設定
@@ -522,124 +550,28 @@ class LineEditor extends AnnotationEditor {
 
   /**
    * 未確定の線の描画処理
-   * @param {number} x
-   * @param {number} y
    */
-  #draw(x, y) {
-    // const [lastX, lastY] = this.currentPath.at(-1);
-    // if (this.currentPath.length > 1 && x === lastX && y === lastY) {
-    //   return;
-    // }
-    // const currentPath = this.currentPath;
-    // let path2D = this.#currentPath2D;
-    // currentPath.push([x, y]);
-    // this.#hasSomethingToDraw = true;
-
-    // if (currentPath.length <= 2) {
-    //   path2D.moveTo(...currentPath[0]);
-    //   path2D.lineTo(x, y);
-    //   return;
-    // }
-
-    // if (currentPath.length === 3) {
-    //   this.#currentPath2D = path2D = new Path2D();
-    //   path2D.moveTo(...currentPath[0]);
-    // }
-
-    // this.#makeBezierCurve(
-    //   path2D,
-    //   ...currentPath.at(-3),
-    //   ...currentPath.at(-2),
-    //   x,
-    //   y
-    // );
-
-    // 前回mouseDownしたX,y座標を取得
-    const [lastX, lastY] = this.currentPath.at(-1);
-    // currentPathにX,Y座標の登録があり＆今のx,y座標と前回が同じ場合
-    if (this.currentPath.length > 1 && x === lastX && y === lastY) {
-      // 何もしない
-      return;
+  #draw() {
+    const { ctx, tempPath2D } = this;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    // 仮の線を描画 (破線として区別)
+    if (tempPath2D) {
+      ctx.save();
+      // this.#setTempStroke();
+      // ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.miterLimit = 10;
+      ctx.strokeStyle = "red";
+      ctx.setLineDash([5, 5]); // 破線を設定
+      ctx.stroke(tempPath2D); // 仮の線を描画
+      ctx.restore();
     }
-    const currentPath = this.currentPath;
-    // 前回currentPathにPUSHしている（mouseDown後に２回目以降のmouseMove）の場合
-    if (this.currentPath.length > 1) {
-      // 前回のcurrentPathへのx,y座標を削除
-      this.currentPath.pop();
-      const { ctx } = this;
-      const thickness = Math.ceil(this.thickness * this.parentScale);
-      const lastPoints = this.currentPath.slice(-3);
-      const xx = lastPoints.map(xy => xy[0]);
-      const yy = lastPoints.map(xy => xy[1]);
-      const xMin = Math.min(...xx) - thickness;
-      const xMax = Math.max(...xx) + thickness;
-      const yMin = Math.min(...yy) - thickness;
-      const yMax = Math.max(...yy) + thickness;
-      // Canvasの描画をクリア
-      if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("MOZCENTRAL")) {
-        // In Chrome, the clip() method doesn't work as expected.
-        ctx.clearRect(xMin, yMin, xMax - xMin, yMax - yMin);
-        ctx.beginPath();
-        ctx.rect(xMin, yMin, xMax - xMin, yMax - yMin);
-        ctx.clip();
-      } else {
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      }
-    }
-    const path2D = this.#currentPath2D;
-    // 今回のx,y座標をcurrentPathにPUSH
-    this.currentPath.push([x, y]);
-    this.#hasSomethingToDraw = true;
-
-    // 最初にmouseDownしたx,y座標に位置付ける
-    path2D.moveTo(...currentPath[0]);
-    // 今回のx,y座標まで線を描画する
-    path2D.lineTo(x, y);
-  }
-
-  /**
-   * 未確定の線の確定描画処理
-   */
-  #fixDraw() {
-    const { ctx } = this;
-    const thickness = Math.ceil(this.thickness * this.parentScale);
-    const lastPoints = this.currentPath.slice(-3);
-    const xx = lastPoints.map(xy => xy[0]);
-    const yy = lastPoints.map(xy => xy[1]);
-    const xMin = Math.min(...xx) - thickness;
-    const xMax = Math.max(...xx) + thickness;
-    const yMin = Math.min(...yy) - thickness;
-    const yMax = Math.max(...yy) + thickness;
-    // Canvasの描画をクリア
-    if (typeof PDFJSDev !== "undefined" && PDFJSDev.test("MOZCENTRAL")) {
-      // In Chrome, the clip() method doesn't work as expected.
-      ctx.clearRect(xMin, yMin, xMax - xMin, yMax - yMin);
-      ctx.beginPath();
-      ctx.rect(xMin, yMin, xMax - xMin, yMax - yMin);
-      ctx.clip();
-    } else {
-      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-    const path2D = this.#currentPath2D;
-    this.#hasSomethingToDraw = true;
-    // currentPathの2番目のx,y座標を取得
-    const [lastX, lastY] = this.currentPath[1];
-    // 最初にmouseDownしたx,y座標に位置付ける
-    path2D.moveTo(...this.currentPath[0]);
-    // 最後のx,y座標まで線を描画する
-    path2D.lineTo(lastX, lastY);
-  }
-
-  // アノテーション用Canvasに描画
-  #endPath() {
-    // currentPathに未設定の場合
-    if (this.currentPath.length === 0) {
-      // 何もしない
-      return;
-    }
-    // currentPathの最初（０番目）から最後（１番目）までアノテーション用Canvasに線を描画
-    const lastPoint = this.currentPath.at(0);
-    this.#currentPath2D.lineTo(...lastPoint);
+    // 線のスタイル設定
+    this.#setStroke();
+    // 確定された線を描画
+    ctx.stroke(this.#currentPath2D);
   }
 
   /**
@@ -653,10 +585,6 @@ class LineEditor extends AnnotationEditor {
     // 最終x,y座標算出
     x = Math.min(Math.max(x, 0), this.canvas.width);
     y = Math.min(Math.max(y, 0), this.canvas.height);
-    // 最終x,y座標まで線を描画
-    this.#draw(x, y);
-    // アノテーション用Canvasに描画
-    this.#endPath();
 
     // Interpolate the path entered by the user with some
     // Bezier's curves in order to have a smoother path and
@@ -672,7 +600,7 @@ class LineEditor extends AnnotationEditor {
     const path2D = this.#currentPath2D;
     const currentPath = this.currentPath;
     this.currentPath = [];
-    this.#currentPath2D = new Path2D();
+    // this.#currentPath2D = new Path2D();
 
     const cmd = () => {
       this.allRawPaths.push(currentPath);
@@ -739,26 +667,11 @@ class LineEditor extends AnnotationEditor {
     ctx.restore();
   }
 
-  // #makeBezierCurve(path2D, x0, y0, x1, y1, x2, y2) {
-  //   const prevX = (x0 + x1) / 2;
-  //   const prevY = (y0 + y1) / 2;
-  //   const x3 = (x1 + x2) / 2;
-  //   const y3 = (y1 + y2) / 2;
-
-  //   path2D.bezierCurveTo(
-  //     prevX + (2 * (x1 - prevX)) / 3,
-  //     prevY + (2 * (y1 - prevY)) / 3,
-  //     x3 + (2 * (x1 - x3)) / 3,
-  //     y3 + (2 * (y1 - y3)) / 3,
-  //     x3,
-  //     y3
-  //   );
-  // }
-
   #generateBezierPoints() {
     const path = this.currentPath;
     if (path.length <= 2) {
-      return [[path[0], path[0], path.at(-1), path.at(-1)]];
+      // return [[path[0], path[0], path.at(-1), path.at(-1)]];
+      return [[path[0], path[0], path[1], path[1]]];
     }
 
     const bezierPoints = [];
@@ -878,7 +791,9 @@ class LineEditor extends AnnotationEditor {
     );
   }
 
-  // Canvas内ポインタDOWNイベント削除
+  /**
+   * Canvas内ポインタDOWNイベント削除
+   */
   #removePointerdownListener() {
     this.pointerdownAC?.abort();
     this.pointerdownAC = null;
@@ -916,8 +831,21 @@ class LineEditor extends AnnotationEditor {
    */
   canvasPointermove(event) {
     event.preventDefault();
-    // 未確定の線の描画処理
-    this.#draw(event.offsetX, event.offsetY);
+    // 仮描画中でない場合
+    if (!this.isDrawing) {
+      // 何もしない
+      return;
+    }
+    // 仮線の終点の座標を保持
+    this.tempLine = [event.offsetX, event.offsetY];
+    // 確定線のPath2Dから仮線のPath2Dを生成
+    // this.tempPath2D = new Path2D(this.#currentPath2D);
+    this.tempPath2D = new Path2D();
+    // 仮線の開始点（currentPathの０番目）から現在のマウスの位置まで線を引く
+    this.tempPath2D.moveTo(this.currentPath[0][0], this.currentPath[0][1]);
+    this.tempPath2D.lineTo(event.offsetX, event.offsetY);
+    // 描画処理
+    this.#draw();
   }
 
   /**
@@ -926,8 +854,24 @@ class LineEditor extends AnnotationEditor {
    */
   canvasPointerup(event) {
     event.preventDefault();
-    // 未確定の線の確定描画処理
-    this.#fixDraw();
+    // 仮描画中でない場合
+    if (!this.isDrawing) {
+      // 何もしない
+      return;
+    }
+    // 仮描画中をOFF
+    this.isDrawing = false;
+    // 確定線の終点の座標をPUSH（１番目に設定）
+    this.currentPath.push([event.offsetX, event.offsetY]);
+    // 仮線の終点の座標クリア
+    this.tempLine = null;
+    // 仮線のPath2Dが設定済の場合
+    if (this.tempPath2D) {
+      // 仮線のPath2Dの設定内容を確定線のPath2Dに追加
+      this.#currentPath2D.addPath(this.tempPath2D);
+      // 仮線のPath2Dをリセット
+      this.tempPath2D = null;
+    }
     // 未確定の線の描画終了処理
     this.#endDrawing(event);
   }
@@ -959,7 +903,8 @@ class LineEditor extends AnnotationEditor {
       this.#canvasContextMenuTimeoutId = null;
       this.canvas.removeEventListener("contextmenu", noContextMenu);
     }, 10);
-
+    // 描画処理
+    this.#draw();
     // 線の描画終了
     this.#stopDrawing(event.offsetX, event.offsetY);
     // 線のアノテーション情報を格納
